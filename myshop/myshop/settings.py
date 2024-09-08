@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+from celery.schedules import crontab
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,11 +46,21 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-#    'channels',
+    'channels',
 ]
 
-#ASGI_APPLICATION = 'myshop.asgi.application'
+ASGI_APPLICATION = 'myshop.asgi.application'
 
+# myshop/settings.py
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -169,3 +179,13 @@ LOGIN_URL = '/login/'
 
 SITE_ID = 1
 
+# задачи
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+
+CELERY_BEAT_SCHEDULE = {
+    'send-notification-every-10-seconds': {
+        'task': 'shop.tasks.send_notification',
+        'schedule': 10.0,
+    },
+}

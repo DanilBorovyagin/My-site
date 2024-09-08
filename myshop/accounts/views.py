@@ -18,7 +18,7 @@ def register(request):
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('home')
     else:
-        form = UserRegistrationForm(
+        form = UserRegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
 
